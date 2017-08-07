@@ -2,16 +2,13 @@
 #include "HCSR04.h"
 //Inclusion des librairies externes
 #include "Arduino.h"
-#include "statEngine.h"
 #include "i2cRegister.h"
 #define byte unsigned char
 //Declaration du constructeur
-HCSR04::HCSR04(int triggerPin, int echoPin, int pause, int precisionStatistique, i2cRegister *Registre)
+HCSR04::HCSR04(int triggerPin, int echoPin, i2cRegister *Registre)
 {
   _triggerPin = triggerPin;
   _echoPin = echoPin;
-  _pause = pause;
-  _Stat = new statEngine(precisionStatistique);
   _Registre = Registre;
 }
 float HCSR04::rawDistance()
@@ -29,18 +26,6 @@ float HCSR04::rawDistance()
   //Retour d'information
   return distance;
 }
-float HCSR04::mesureDistance()
-{
-  //Declaration du tableau de mesure
-  float distance[_Stat.getPrecision()];
-  //Remplissage du tableau
-  for(int i=0; i<_Stat.getPrecision(); i++)
-  {
-    distance[i]=rawDistance();
-    delay(_pause);
-  }
-  return _Stat.statMoyenne(distance);
-}
 float HCSR04::getSoundSpeed()
 {
   //On calcule la vitesse du son en fonction de la temperature (en m.s^(-1))
@@ -50,6 +35,6 @@ float HCSR04::getSoundSpeed()
 }
 void HCSR04::lectureNiveau()
 {
-  _Registre->storeFloat(0x02,100.0-(mesureDistance()*(100.0/(_Registre->readFloat(0x04)))));
+  _Registre->storeFloat(0x01,100.0-(rawDistance()*(100.0/(_Registre->readFloat(0x04)))));
 }
 

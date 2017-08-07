@@ -9,7 +9,11 @@ i2cRegister Registre;
 #define i2c_addr 0x04
 //Declaration des objets PT100 et HCSR04
 PT100 capteurTemperature(3,&Registre);
-HCSR04 capteurNiveau(1,4,100,10,&Registre);
+HCSR04 capteurNiveau(1,4,&Registre);
+//Modification de la taille du buffer i2c
+#ifndef TWI_RX_BUFFER_SIZE
+#define TWI_RX_BUFFER_SIZE ( 64 )
+#endif
 //Declaration de la variable globale de navigation registre
 byte CURRENT_REGISTER = 0x00;
 //Fonction lorque l'on appel le tiny via i2c
@@ -27,14 +31,21 @@ void i2cRequest()
   TinyWireS.send(val[1]);
 }
 //Fonction lors de la reception d'un signal i2c
-void i2cReceive()
+void i2cReceive(unsigned int available_bytes)
 {
    //Le premier byte recu modifie le registre courant
    CURRENT_REGISTER = TinyWireS.receive();
-   //Si des bytes son disponible on ecrit le registre
-   if(TinyWireS.available()!=0)
+   //On regarde si l'on souhaite simplement changer de registre ou alors ecrire
+   available_bytes--;
+   if(!available_bytes)
    {
-     Registre.setOctet(CURRENT_REGISTER,TinyWireS.receive(),TinyWireS.receive());
+     return;
+   }
+   else
+   {
+     byte MSB = TinyWireS.receive();
+     byte LSB = TinyWireS.receive();
+     Registre.setOctet(CURRENT_REGISTER,MSB,LSB);
      if(CURRENT_REGISTER == 2)
      {
        capteurTemperature.calibrationTemperature();

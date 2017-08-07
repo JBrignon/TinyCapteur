@@ -4,7 +4,7 @@
 //Inclusion des librairies externes
 #include "Arduino.h"
 #include "i2cRegister.h"
-#define byte unsigned char
+//#define byte unsigned char
 //Constantes
 //Declaration des constantes mathematiques pour la PT100
 #define A 3.9083E-3

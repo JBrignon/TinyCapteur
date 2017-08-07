@@ -8,7 +8,7 @@ class Key
   public :
     //Constructeur 
     Key();
-    Key(unsigned char Addr);
+    Key(byte Addr);
     //Declaration des variables public
     byte _Addr;
     byte _MSB;

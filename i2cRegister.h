@@ -5,7 +5,7 @@
 #include "Key.h"
 //Inclusion des librairies
 #include "EEPROM.h"
-#define byte unsigned char
+//#define byte unsigned char
 #define REGISTER_SIZE 6
 //Definition de la classe i2cRegister
 class i2cRegister
