@@ -5,7 +5,7 @@
 #include "PT100.h"
 #define byte unsigned char
 //Declaration des constantes de l'i2c
-i2cRegister Registre;
+i2cRegister Registre(6);
 #define i2c_addr 0x04
 //Declaration des objets PT100 et HCSR04
 PT100 capteurTemperature(3,&Registre);
@@ -25,7 +25,7 @@ void i2cRequest()
   capteurNiveau.lectureNiveau();
   //On recupere le MSB et le LSB du registre courant dans un tableau
   byte val[2];
-  Registre.getOctet(CURRENT_REGISTER,val);
+  Registre.getByte(CURRENT_REGISTER,val);
   //Envoi les valeurs
   TinyWireS.send(val[0]);
   TinyWireS.send(val[1]);
@@ -45,7 +45,7 @@ void i2cReceive(unsigned int available_bytes)
    {
      byte MSB = TinyWireS.receive();
      byte LSB = TinyWireS.receive();
-     Registre.setOctet(CURRENT_REGISTER,MSB,LSB);
+     Registre.setByte(CURRENT_REGISTER,MSB,LSB);
      if(CURRENT_REGISTER == 2)
      {
        capteurTemperature.calibrationTemperature();
